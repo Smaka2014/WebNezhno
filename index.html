@@ -47,7 +47,6 @@
       cursor: pointer;
       margin-left: 16px;
     }
-    /* Burger menu popup */
     .menu-popup {
       position: absolute;
       top: 64px;
@@ -75,7 +74,6 @@
       font-weight: bold;
       margin-left: 5px;
     }
-    /* Каталог товара */
     .catalog {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -113,10 +111,27 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .add-btn:hover {
+    .add-btn:hover { background: #4151fc; color: #fff; }
+    /* Кнопка перейти в корзину */
+    .go-to-cart-btn {
+      display: none;
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 36px;
       background: #4151fc;
       color: #fff;
+      padding: 16px 32px;
+      border-radius: 14px;
+      border: none;
+      font-size: 1.18rem;
+      z-index: 30;
+      box-shadow: 0 7px 32px #101920b0;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
     }
+    .go-to-cart-btn.active { display: block; }
     /* Корзина */
     .cart-modal {
       display: none;
@@ -151,15 +166,70 @@
       color: #fff;
     }
     .cart-empty { color: #aaa; }
-    .close-cart {
+    .close-cart { 
       background: #2e3640;
       color: #fff;
       border: none;
       border-radius: 7px;
       padding: 7px 16px;
-      cursor: pointer;
+      cursor: pointer; 
       font-size: 1rem;
       margin-top: 6px;
+    }
+    /* Профиль - окно редактирования */
+    .profile-modal {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20,25,30, 0.97);
+      z-index: 25;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 60px;
+    }
+    .profile-modal.active { display: flex; }
+    .profile-content {
+      background: #232d36;
+      border-radius: 18px;
+      padding: 32px 26px;
+      min-width: 310px;
+      max-width: 92vw;
+      text-align: left;
+    }
+    .profile-title {
+      font-size: 1.23rem;
+      font-weight: bold;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .profile-form { display: flex; flex-direction: column; gap: 12px; }
+    .profile-form input, .profile-form select {
+      background: #182027;
+      color: #fff;
+      border: 1.3px solid #313e4a;
+      border-radius: 7px;
+      padding: 10px 12px;
+      font-size: 1rem;
+      width: 100%;
+    }
+    .save-profile-btn,
+    .close-profile-btn {
+      margin-top: 10px;
+      background: #4151fc;
+      color: #fff;
+      border-radius: 8px;
+      padding: 9px 0;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+    }
+    .close-profile-btn {
+      background: #2e3640;
+      margin-top: 5px;
     }
     .bot-link {
       text-align: center;
@@ -185,9 +255,13 @@
     <div class="menu-popup-item" id="cartBtn">&#128722; Корзина <span class="cart-count" id="cartCount">(0)</span></div>
   </div>
 </div>
-<div class="catalog" id="catalog">
-  <!-- Каталог формируется скриптом ниже -->
-</div>
+
+<!-- Каталог -->
+<div class="catalog" id="catalog"></div>
+
+<!-- Кнопка Перейти в корзину -->
+<button class="go-to-cart-btn" id="goToCartBtn">Перейти в корзину</button>
+
 <!-- Модальное окно корзины -->
 <div class="cart-modal" id="cartModal">
   <div class="cart-content">
@@ -196,43 +270,54 @@
     <button class="close-cart" id="closeCartBtn">Закрыть</button>
   </div>
 </div>
+
+<!-- Модальное окно профиля -->
+<div class="profile-modal" id="profileModal">
+  <div class="profile-content">
+    <div class="profile-title">Настройки профиля</div>
+    <form class="profile-form" id="profileForm">
+      <input type="text" id="surname" placeholder="Фамилия">
+      <input type="text" id="name" placeholder="Имя">
+      <input type="text" id="patronymic" placeholder="Отчество">
+      <input type="email" id="email" placeholder="Почта">
+      <select id="country">
+        <option value="">Выберите страну</option>
+        <option value="Россия">Россия</option>
+        <option value="Беларусь">Беларусь</option>
+        <option value="Казахстан">Казахстан</option>
+        <!-- Добавь свои страны -->
+      </select>
+      <select id="region">
+        <option value="">Выберите регион</option>
+        <option value="Москва">Москва</option>
+        <option value="СПб">Санкт-Петербург</option>
+        <!-- Добавь свои регионы -->
+      </select>
+      <select id="city">
+        <option value="">Выберите город/посёлок</option>
+        <option value="Москва">Москва</option>
+        <option value="Петербург">Петербург</option>
+        <!-- Добавь свои города -->
+      </select>
+      <button type="submit" class="save-profile-btn">Сохранить</button>
+      <button type="button" class="close-profile-btn" id="closeProfileBtn">Закрыть</button>
+    </form>
+  </div>
+</div>
+
 <div class="bot-link">@hustlehh_bot</div>
+
 <script>
 const productsData = [
-  {
-    id: '1',
-    img: 'https://static.insales.ru/images/collections/1/5375/391322351/medium_B_Complex.jpg',
-    title: 'Базовая',
-    price: 3000
-  },
-  {
-    id: '2',
-    img: 'https://static.insales.ru/images/collections/1/5375/391323985/medium_BPC-157.jpg',
-    title: 'BPC-157',
-    price: 3500
-  },
-  {
-    id: '3',
-    img: 'https://static.insales.ru/images/collections/1/5375/391324194/medium_SJ-PP-332.jpg',
-    title: 'SJ-PP-332',
-    price: 2800
-  },
-  {
-    id: '4',
-    img: 'https://static.insales.ru/images/collections/1/5375/391324379/medium_Mogrel.jpg',
-    title: 'Mogrel',
-    price: 4200
-  },
-    {
-    id: '5',
-    img: 'https://static.insales.ru/images/collections/1/5375/391324379/medium_Mogrel.jpg',
-    title: 'Свечка',
-    price: 3300
-  },
+  {id: '1', img: 'https://static.insales.ru/images/collections/1/5375/391322351/medium_B_Complex.jpg', title: 'Б КОМПЛЕКС', price: 3000},
+  {id: '2', img: 'https://static.insales.ru/images/collections/1/5375/391323985/medium_BPC-157.jpg', title: 'BPC-157', price: 3500},
+  {id: '3', img: 'https://static.insales.ru/images/collections/1/5375/391324194/medium_SJ-PP-332.jpg', title: 'SJ-PP-332', price: 2800},
+  {id: '4', img: 'https://static.insales.ru/images/collections/1/5375/391324379/medium_Mogrel.jpg', title: 'Mogrel', price: 4200},
 ];
 const catalog = document.getElementById('catalog');
 const searchInput = document.getElementById('searchInput');
 let cart = [];
+
 function renderCatalog(products) {
   catalog.innerHTML = '';
   products.forEach(product => {
@@ -246,7 +331,6 @@ function renderCatalog(products) {
     `;
     catalog.appendChild(card);
   });
-  // навесить обработчики на кнопки "добавить"
   document.querySelectorAll('.add-btn').forEach(btn => {
     btn.onclick = () => {
       const id = btn.getAttribute('data-id');
@@ -254,32 +338,42 @@ function renderCatalog(products) {
     }
   });
 }
-// поиск
+// Поиск
 searchInput.addEventListener('input', function() {
   const value = this.value.toLowerCase();
-  const filtered = productsData.filter(p =>
+  const filtered = productsData.filter(p => 
     p.title.toLowerCase().includes(value)
   );
   renderCatalog(filtered);
 });
-// корзина
+
+// Корзина
 const cartBtn = document.getElementById('cartBtn');
 const cartCount = document.getElementById('cartCount');
 const cartModal = document.getElementById('cartModal');
 const cartList = document.getElementById('cartList');
 const closeCartBtn = document.getElementById('closeCartBtn');
+const goToCartBtn = document.getElementById('goToCartBtn');
 function addToCart(id) {
   const product = productsData.find(p => p.id === id);
   if (!product) return;
-  // поддержка количества
   const found = cart.find(item => item.id === id);
   if (found) found.qty += 1; else cart.push({...product, qty: 1});
   updateCartUI();
 }
 function updateCartUI() {
-  cartCount.textContent = `(${cart.reduce((a, b) => a + b.qty, 0)})`;
+  const total = cart.reduce((a, b) => a + b.qty, 0);
+  cartCount.textContent = `(${total})`;
+  // показать/скрыть кнопку “перейти в корзину”
+  if (total > 0) {
+    goToCartBtn.classList.add('active');
+  } else {
+    goToCartBtn.classList.remove('active');
+  }
 }
-cartBtn.onclick = () => {
+cartBtn.onclick = openCartModal;
+goToCartBtn.onclick = openCartModal;
+function openCartModal() {
   cartModal.classList.add('active');
   cartList.innerHTML = '';
   if (!cart.length) {
@@ -294,16 +388,18 @@ cartBtn.onclick = () => {
       `;
     });
   }
-};
+}
 window.removeFromCart = function(id) {
   cart = cart.filter(item => item.id !== id);
   updateCartUI();
-  cartBtn.onclick(); // пересобрать окно
+  openCartModal();
 };
 closeCartBtn.onclick = () => cartModal.classList.remove('active');
+
 renderCatalog(productsData);
 updateCartUI();
-// меню
+
+// Меню
 const menuBtn = document.getElementById('menuBtn');
 const menuPopup = document.getElementById('menuPopup');
 let menuOpen = false;
@@ -312,16 +408,48 @@ menuBtn.onclick = () => {
   if (menuOpen) menuPopup.classList.add('active');
   else menuPopup.classList.remove('active');
 };
-// закрытие меню при клике вне его
+// закрыть меню при клике вне него
 document.addEventListener('click', (e) => {
   if (!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) {
     menuPopup.classList.remove('active');
     menuOpen = false;
   }
 });
-// "Профиль" — можно добавить обработчик для перехода в профиль
-document.getElementById('profileBtn').onclick = () => {
-  alert('Профиль пока не реализован'); // здесь твой код
+// Профиль — модальное окно
+const profileModal = document.getElementById('profileModal');
+const profileBtn = document.getElementById('profileBtn');
+const closeProfileBtn = document.getElementById('closeProfileBtn');
+const profileForm = document.getElementById('profileForm');
+profileBtn.onclick = () => {
+  profileModal.classList.add('active');
+  menuPopup.classList.remove('active');
+  menuOpen = false;
+  // восстановление данных при открытии
+  const data = JSON.parse(localStorage.getItem('profileData') || '{}');
+  profileForm.surname.value = data.surname || '';
+  profileForm.name.value = data.name || '';
+  profileForm.patronymic.value = data.patronymic || '';
+  profileForm.email.value = data.email || '';
+  profileForm.country.value = data.country || '';
+  profileForm.region.value = data.region || '';
+  profileForm.city.value = data.city || '';
+};
+closeProfileBtn.onclick = () => profileModal.classList.remove('active');
+profileForm.onsubmit = function(e) {
+  e.preventDefault();
+  // сохранить в localStorage (можно подправить под backend)
+  const formData = {
+    surname: this.surname.value,
+    name: this.name.value,
+    patronymic: this.patronymic.value,
+    email: this.email.value,
+    country: this.country.value,
+    region: this.region.value,
+    city: this.city.value
+  };
+  localStorage.setItem('profileData', JSON.stringify(formData));
+  alert('Профиль сохранён!');
+  profileModal.classList.remove('active');
 };
 </script>
 </body>
