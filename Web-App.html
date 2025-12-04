@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>TripleH бот заказов</title>
+  <style>
+    body {
+      background: #232d36;
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      background: #182027;
+      border-bottom: 1.5px solid #333b42;
+      position: relative;
+    }
+    .logo {
+      height: 32px;
+    }
+    .title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-left: 15px;
+    }
+    .search-bar {
+      flex: 1;
+      margin: 0 16px;
+      display: flex;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #1b2229;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .menu {
+      font-size: 2rem;
+      cursor: pointer;
+      margin-left: 16px;
+    }
+    /* Burger menu popup */
+    .menu-popup {
+      position: absolute;
+      top: 64px;
+      right: 20px;
+      background: #202931;
+      border-radius: 10px;
+      box-shadow: 0 2px 14px #00000020;
+      z-index: 10;
+      display: none;
+      min-width: 160px;
+    }
+    .menu-popup.active { display: block; }
+    .menu-popup-item {
+      padding: 16px;
+      cursor: pointer;
+      font-size: 1rem;
+      border-bottom: 1px solid #253040;
+      display: flex;
+      align-items: center;
+      color: #fff;
+    }
+    .menu-popup-item:last-child { border-bottom: none; }
+    .cart-count {
+      color: #47ef85;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+    /* Каталог товара */
+    .catalog {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 24px;
+    }
+    .product-card {
+      background: #202931;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 14px #00000020;
+    }
+    .product-img {
+      width: 92px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 10px;
+      background: #181d21;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px #00000010;
+    }
+    .product-price { font-size: 1rem; font-weight: bold; margin-bottom: 6px;}
+    .product-title { color: #a5fffa; text-transform: uppercase; font-size: .92rem; margin-bottom: 8px;}
+    .add-btn {
+      background: transparent;
+      border: 1.5px solid #4151fc;
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 1rem;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-btn:hover {
+      background: #4151fc;
+      color: #fff;
+    }
+    /* Корзина */
+    .cart-modal {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20,25,30, 0.97);
+      z-index: 20;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 80px;
+    }
+    .cart-modal.active { display: flex; }
+    .cart-content {
+      background: #232d36;
+      border-radius: 18px;
+      padding: 28px 24px;
+      min-width: 300px;
+      text-align: center;
+      max-width: 90vw;
+    }
+    .cart-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 16px; }
+    .cart-list { margin-bottom: 18px; }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    .cart-empty { color: #aaa; }
+    .close-cart {
+      background: #2e3640;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 7px 16px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 6px;
+    }
+    .bot-link {
+      text-align: center;
+      padding: 14px;
+      background: #1b232b;
+      color: #6acecb;
+      border-top: 1px solid #293038;
+      font-size: .93rem;
+      letter-spacing: 0.03em;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <img src="https://cdn-icons-png.flaticon.com/128/455/455667.png" alt="logo" class="logo">
+  <span class="title">TripleH бот заказов</span>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Поиск по каталогу..."/>
+  </div>
+  <span class="menu" id="menuBtn">&#9776;</span>
+  <div class="menu-popup" id="menuPopup">
+    <div class="menu-popup-item" id="profileBtn">&#128100; Профиль</div>
+    <div class="menu-popup-item" id="cartBtn">&#128722; Корзина <span class="cart-count" id="cartCount">(0)</span></div>
+  </div>
+</div>
+<div class="catalog" id="catalog">
+  <!-- Каталог формируется скриптом ниже -->
+</div>
+<!-- Модальное окно корзины -->
+<div class="cart-modal" id="cartModal">
+  <div class="cart-content">
+    <div class="cart-title">Ваша корзина</div>
+    <div class="cart-list" id="cartList"></div>
+    <button class="close-cart" id="closeCartBtn">Закрыть</button>
+  </div>
+</div>
+<div class="bot-link">@hustlehh_bot</div>
+<script>
+const productsData = [
+  {
+    id: '1',
+    img: 'https://static.insales.ru/images/collections/1/5375/391322351/medium_B_Complex.jpg',
+    title: 'Базовая',
+    price: 3000
+  },
+  {
+    id: '2',
+    img: 'https://static.insales.ru/images/collections/1/5375/391323985/medium_BPC-157.jpg',
+    title: 'BPC-157',
+    price: 3500
+  },
+  {
+    id: '3',
+    img: 'https://static.insales.ru/images/collections/1/5375/391324194/medium_SJ-PP-332.jpg',
+    title: 'SJ-PP-332',
+    price: 2800
+  },
+  {
+    id: '4',
+    img: 'https://static.insales.ru/images/collections/1/5375/391324379/medium_Mogrel.jpg',
+    title: 'Mogrel',
+    price: 4200
+  },
+    {
+    id: '5',
+    img: 'https://static.insales.ru/images/collections/1/5375/391324379/medium_Mogrel.jpg',
+    title: 'Свечка',
+    price: 3300
+  },
+];
+const catalog = document.getElementById('catalog');
+const searchInput = document.getElementById('searchInput');
+let cart = [];
+function renderCatalog(products) {
+  catalog.innerHTML = '';
+  products.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img class="product-img" src="${product.img}" alt="${product.title}">
+      <div class="product-price">${product.price} ₽</div>
+      <div class="product-title">${product.title}</div>
+      <button class="add-btn" data-id="${product.id}">+ Добавить</button>
+    `;
+    catalog.appendChild(card);
+  });
+  // навесить обработчики на кнопки "добавить"
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-id');
+      addToCart(id);
+    }
+  });
+}
+// поиск
+searchInput.addEventListener('input', function() {
+  const value = this.value.toLowerCase();
+  const filtered = productsData.filter(p =>
+    p.title.toLowerCase().includes(value)
+  );
+  renderCatalog(filtered);
+});
+// корзина
+const cartBtn = document.getElementById('cartBtn');
+const cartCount = document.getElementById('cartCount');
+const cartModal = document.getElementById('cartModal');
+const cartList = document.getElementById('cartList');
+const closeCartBtn = document.getElementById('closeCartBtn');
+function addToCart(id) {
+  const product = productsData.find(p => p.id === id);
+  if (!product) return;
+  // поддержка количества
+  const found = cart.find(item => item.id === id);
+  if (found) found.qty += 1; else cart.push({...product, qty: 1});
+  updateCartUI();
+}
+function updateCartUI() {
+  cartCount.textContent = `(${cart.reduce((a, b) => a + b.qty, 0)})`;
+}
+cartBtn.onclick = () => {
+  cartModal.classList.add('active');
+  cartList.innerHTML = '';
+  if (!cart.length) {
+    cartList.innerHTML = '<div class="cart-empty">Корзина пуста</div>';
+  } else {
+    cart.forEach(item => {
+      cartList.innerHTML += `
+        <div class="cart-item">
+          <span>${item.title} × ${item.qty}</span>
+          <button onclick="removeFromCart('${item.id}')">✕</button>
+        </div>
+      `;
+    });
+  }
+};
+window.removeFromCart = function(id) {
+  cart = cart.filter(item => item.id !== id);
+  updateCartUI();
+  cartBtn.onclick(); // пересобрать окно
+};
+closeCartBtn.onclick = () => cartModal.classList.remove('active');
+renderCatalog(productsData);
+updateCartUI();
+// меню
+const menuBtn = document.getElementById('menuBtn');
+const menuPopup = document.getElementById('menuPopup');
+let menuOpen = false;
+menuBtn.onclick = () => {
+  menuOpen = !menuOpen;
+  if (menuOpen) menuPopup.classList.add('active');
+  else menuPopup.classList.remove('active');
+};
+// закрытие меню при клике вне его
+document.addEventListener('click', (e) => {
+  if (!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) {
+    menuPopup.classList.remove('active');
+    menuOpen = false;
+  }
+});
+// "Профиль" — можно добавить обработчик для перехода в профиль
+document.getElementById('profileBtn').onclick = () => {
+  alert('Профиль пока не реализован'); // здесь твой код
+};
+</script>
+</body>
+</html>
