@@ -553,6 +553,7 @@
   window._giveFreely_init = true;
 
   const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  console.log("TG object:", tg);
   if (tg) tg.expand();
 
   const productsData = [
@@ -760,13 +761,19 @@
   function sendOrderToBot() {
     if (!cart.length) return;
     let total = 0;
-    const itemsForSend = cart.map(item => { total += item.price * item.qty; return { id: item.id, name: item.title, price: item.price, qty: item.qty }; });
+    const itemsForSend = cart.map(item => {
+      total += item.price * item.qty;
+      return { id: item.id, name: item.title, price: item.price, qty: item.qty };
+    });
     const payload = { items: itemsForSend, total: total };
+    console.log("sendOrderToBot called, payload:", payload);
+    console.log("tg in sendOrderToBot:", tg, "has sendData:", tg && typeof tg.sendData);
     if (tg && typeof tg.sendData === 'function') {
       tg.sendData(JSON.stringify(payload));
+      console.log("tg.sendData called");
       if (typeof tg.close === 'function') tg.close();
     } else {
-      console.log('Payload for bot:', payload);
+      console.log('Payload for bot (fallback):', payload);
       alert('Заказ (demo): ' + JSON.stringify(payload));
     }
   }
@@ -780,3 +787,4 @@
 
 </body>
 </html>
+
