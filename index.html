@@ -458,7 +458,7 @@
     }
   </style>
 
-  <!-- Telegram WebApp SDK (в обычном браузере просто не сработает tg, но не помешает) -->
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
@@ -466,7 +466,7 @@
 
 <div class="header">
   <!-- При деплое поменяй путь к логотипу на публичный URL -->
-  <img src="https://github.com/Smaka2014/WebNezhno/blob/main/img/logo.jpg alt="logo" class="logo">
+  <img src="https://github.com/Smaka2014/WebNezhno/blob/main/img/logo.jpg?raw=true" alt="logo" class="logo">
   <span class="title">Каталог Nezhno</span>
 
   <div class="search-bar">
@@ -548,16 +548,13 @@
 </div>
 
 <script>
-  // Инициализация WebApp (в обычном браузере tg будет null, это ок)
-  let tg = null;
-  try {
-    tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tg) tg.expand();
-  } catch(e) {
-    console.warn('Telegram WebApp init error:', e);
-  }
+(() => {
+  if (window._giveFreely_init) return;
+  window._giveFreely_init = true;
 
-  // Товары
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  if (tg) tg.expand();
+
   const productsData = [
     {id: '1', img: 'https://static.insales.ru/images/collections/1/5375/391322351/medium_B_Complex.jpg', title: 'Свечка базовая 250мл', price: 2290},
     {id: '2', img: 'https://static.insales.ru/images/collections/1/5375/391323985/medium_BPC-157.jpg', title: 'Новогодний набор', price: 3390},
@@ -566,53 +563,44 @@
 
   const catalog = document.getElementById('catalog');
   const searchInput = document.getElementById('searchInput');
-
   let cart = [];
 
-  function getCartItem(id) {
-    return cart.find(item => item.id === id);
-  }
+  function getCartItem(id) { return cart.find(item => item.id === id); }
 
   function renderCatalog(products) {
-    console.log('renderCatalog called, products:', products);
+    if (!catalog) return;
     catalog.innerHTML = '';
-
     products.forEach(product => {
       const card = document.createElement('div');
       card.className = 'product-card';
-
       card.innerHTML = `
         <img class="product-img" src="${product.img}" alt="${product.title}">
         <div class="product-price">${product.price} ₽</div>
         <div class="product-title">${product.title}</div>
         <div class="product-actions" data-id="${product.id}"></div>
       `;
-
       catalog.appendChild(card);
       updateProductActions(product.id);
     });
   }
 
   function updateProductActions(productId) {
-    const container = catalog.querySelector(\`.product-actions[data-id="\${productId}"]\`);
+    if (!catalog) return;
+    const container = catalog.querySelector(`.product-actions[data-id="${productId}"]`);
     if (!container) return;
-
     const item = getCartItem(productId);
-
     if (!item) {
-      container.innerHTML = \`
-        <button class="add-btn" data-id="\${productId}">+ Добавить</button>
-      \`;
+      container.innerHTML = `<button class="add-btn" data-id="${productId}">+ Добавить</button>`;
       const btn = container.querySelector('.add-btn');
-      btn.onclick = () => addToCart(productId);
+      if (btn) btn.onclick = () => addToCart(productId);
     } else {
-      container.innerHTML = \`
+      container.innerHTML = `
         <div class="product-qty-controls">
-          <button class="product-qty-btn" data-id="\${productId}" data-action="minus">-</button>
-          <span class="product-qty-text">\${item.qty}</span>
-          <button class="product-qty-btn" data-id="\${productId}" data-action="plus">+</button>
+          <button class="product-qty-btn" data-id="${productId}" data-action="minus">-</button>
+          <span class="product-qty-text">${item.qty}</span>
+          <button class="product-qty-btn" data-id="${productId}" data-action="plus">+</button>
         </div>
-      \`;
+      `;
       container.querySelectorAll('.product-qty-btn').forEach(btn => {
         btn.onclick = () => {
           const action = btn.getAttribute('data-action');
@@ -622,16 +610,15 @@
     }
   }
 
-  // Поиск
-  searchInput.addEventListener('input', function() {
-    const value = this.value.toLowerCase();
-    const filtered = productsData.filter(p =>
-      p.title.toLowerCase().includes(value)
-    );
-    renderCatalog(filtered);
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const value = this.value.toLowerCase();
+      const filtered = productsData.filter(p => p.title.toLowerCase().includes(value));
+      renderCatalog(filtered);
+    });
+  }
 
-  // Корзина
+  // элементы корзины (проверяем наличие в DOM перед использованием)
   const cartBtn = document.getElementById('cartBtn');
   const cartCount = document.getElementById('cartCount');
   const cartModal = document.getElementById('cartModal');
@@ -647,63 +634,52 @@
     const found = cart.find(item => item.id === id);
     if (found) found.qty += 1;
     else cart.push({...product, qty: 1});
-
     updateCartUI();
     updateProductActions(id);
   }
 
   function updateCartUI() {
+    if (!cartCount) return;
     const totalQty = cart.reduce((a, b) => a + b.qty, 0);
-    cartCount.textContent = \`(\${totalQty})\`;
-
-    if (totalQty > 0) {
-      goToCartBtn.classList.add('active');
-    } else {
-      goToCartBtn.classList.remove('active');
+    cartCount.textContent = `(${totalQty})`;
+    if (goToCartBtn) {
+      if (totalQty > 0) goToCartBtn.classList.add('active');
+      else goToCartBtn.classList.remove('active');
     }
   }
 
-  cartBtn.onclick = openCartModal;
-  goToCartBtn.onclick = openCartModal;
+  if (cartBtn) cartBtn.onclick = openCartModal;
+  if (goToCartBtn) goToCartBtn.onclick = openCartModal;
 
   function openCartModal() {
-    cartModal.classList.add('active');
+    if (cartModal) cartModal.classList.add('active');
     redrawCartModal();
   }
 
   function redrawCartModal() {
+    if (!cartList) return;
     cartList.innerHTML = '';
-
     if (!cart.length) {
       cartList.innerHTML = '<div class="cart-empty">Корзина пуста</div>';
-      cartTotalEl.textContent = '';
+      if (cartTotalEl) cartTotalEl.textContent = '';
       return;
     }
-
     let totalPrice = 0;
-
     cart.forEach(item => {
       totalPrice += item.price * item.qty;
-
       const row = document.createElement('div');
       row.className = 'cart-item';
-
-      row.innerHTML = \`
-        <div class="cart-item-left">
-          \${item.title}
-        </div>
+      row.innerHTML = `
+        <div class="cart-item-left">${item.title}</div>
         <div class="cart-item-controls">
-          <button class="qty-btn" data-id="\${item.id}" data-action="minus">-</button>
-          <span class="qty-text">\${item.qty}</span>
-          <button class="qty-btn" data-id="\${item.id}" data-action="plus">+</button>
+          <button class="qty-btn" data-id="${item.id}" data-action="minus">-</button>
+          <span class="qty-text">${item.qty}</span>
+          <button class="qty-btn" data-id="${item.id}" data-action="plus">+</button>
         </div>
-      \`;
-
+      `;
       cartList.appendChild(row);
     });
-
-    cartTotalEl.textContent = 'Итого: ' + totalPrice + ' ₽';
-
+    if (cartTotalEl) cartTotalEl.textContent = 'Итого: ' + totalPrice + ' ₽';
     cartList.querySelectorAll('.qty-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
@@ -716,139 +692,91 @@
   function changeQty(id, action) {
     const item = cart.find(i => i.id === id);
     if (!item) return;
-
-    if (action === 'plus') {
-      item.qty += 1;
-    } else if (action === 'minus') {
+    if (action === 'plus') item.qty += 1;
+    else if (action === 'minus') {
       item.qty -= 1;
-      if (item.qty <= 0) {
-        cart = cart.filter(i => i.id !== id);
-      }
+      if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
     }
-
     updateCartUI();
     redrawCartModal();
     updateProductActions(id);
   }
 
-  closeCartBtn.onclick = () => cartModal.classList.remove('active');
+  if (closeCartBtn) closeCartBtn.onclick = () => cartModal && cartModal.classList.remove('active');
 
-  // Меню
+  // меню, профиль, подтверждение и отправка
   const menuBtn = document.getElementById('menuBtn');
   const menuPopup = document.getElementById('menuPopup');
   let menuOpen = false;
-
-  menuBtn.onclick = () => {
+  if (menuBtn) menuBtn.onclick = () => {
     menuOpen = !menuOpen;
-    if (menuOpen) menuPopup.classList.add('active');
-    else menuPopup.classList.remove('active');
+    if (menuOpen) menuPopup && menuPopup.classList.add('active');
+    else menuPopup && menuPopup.classList.remove('active');
   };
-
   document.addEventListener('click', (e) => {
-    if (!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) {
-      menuPopup.classList.remove('active');
-      menuOpen = false;
+    if (menuBtn && menuPopup && !menuBtn.contains(e.target) && !menuPopup.contains(e.target)) {
+      menuPopup.classList.remove('active'); menuOpen = false;
     }
   });
 
-  // Профиль — модальное окно
   const profileModal = document.getElementById('profileModal');
   const profileBtn = document.getElementById('profileBtn');
   const closeProfileBtn = document.getElementById('closeProfileBtn');
   const profileForm = document.getElementById('profileForm');
-
-  profileBtn.onclick = () => {
-    profileModal.classList.add('active');
-    menuPopup.classList.remove('active');
+  if (profileBtn) profileBtn.onclick = () => {
+    profileModal && profileModal.classList.add('active');
+    menuPopup && menuPopup.classList.remove('active');
     menuOpen = false;
-
     const data = JSON.parse(localStorage.getItem('profileData') || '{}');
-    profileForm.surname.value = data.surname || '';
-    profileForm.name.value = data.name || '';
-    profileForm.patronymic.value = data.patronymic || '';
-    profileForm.email.value = data.email || '';
-    profileForm.country.value = data.country || '';
-    profileForm.region.value = data.region || '';
-    profileForm.city.value = data.city || '';
+    if (profileForm) {
+      profileForm.surname.value = data.surname || '';
+      profileForm.name.value = data.name || '';
+      profileForm.patronymic.value = data.patronymic || '';
+      profileForm.email.value = data.email || '';
+      profileForm.country.value = data.country || '';
+      profileForm.region.value = data.region || '';
+      profileForm.city.value = data.city || '';
+    }
   };
-
-  closeProfileBtn.onclick = () => profileModal.classList.remove('active');
-
-  profileForm.onsubmit = function(e) {
+  if (closeProfileBtn) closeProfileBtn.onclick = () => profileModal && profileModal.classList.remove('active');
+  if (profileForm) profileForm.onsubmit = function(e) {
     e.preventDefault();
-
     const formData = {
-      surname: this.surname.value,
-      name: this.name.value,
-      patronymic: this.patronymic.value,
-      email: this.email.value,
-      country: this.country.value,
-      region: this.region.value,
-      city: this.city.value
+      surname: this.surname.value, name: this.name.value, patronymic: this.patronymic.value,
+      email: this.email.value, country: this.country.value, region: this.region.value, city: this.city.value
     };
-
     localStorage.setItem('profileData', JSON.stringify(formData));
     alert('Профиль сохранён!');
-    profileModal.classList.remove('active');
+    profileModal && profileModal.classList.remove('active');
   };
 
-  // Модалка подтверждения
   const confirmBackdrop = document.getElementById('confirmBackdrop');
   const confirmCancel = document.getElementById('confirmCancel');
   const confirmOk = document.getElementById('confirmOk');
-
-  confirmCancel.addEventListener('click', () => {
-    confirmBackdrop.classList.remove('active');
-  });
-
-  confirmOk.addEventListener('click', () => {
-    confirmBackdrop.classList.remove('active');
-    sendOrderToBot();
-  });
-
-  // Кнопка "Оформить заказ"
-  checkoutBtn.addEventListener('click', () => {
-    if (!cart.length) return;
-    confirmBackdrop.classList.add('active');
-  });
+  if (confirmCancel) confirmCancel.addEventListener('click', () => confirmBackdrop && confirmBackdrop.classList.remove('active'));
+  if (confirmOk) confirmOk.addEventListener('click', () => { confirmBackdrop && confirmBackdrop.classList.remove('active'); sendOrderToBot(); });
+  if (checkoutBtn) checkoutBtn.addEventListener('click', () => { if (!cart.length) return; confirmBackdrop && confirmBackdrop.classList.add('active'); });
 
   function sendOrderToBot() {
     if (!cart.length) return;
-
     let total = 0;
-    const itemsForSend = cart.map(item => {
-      total += item.price * item.qty;
-      return {
-        id: item.id,
-        name: item.title,
-        price: item.price,
-        qty: item.qty
-      };
-    });
-
-    const payload = {
-      items: itemsForSend,
-      total: total
-    };
-
+    const itemsForSend = cart.map(item => { total += item.price * item.qty; return { id: item.id, name: item.title, price: item.price, qty: item.qty }; });
+    const payload = { items: itemsForSend, total: total };
     if (tg && typeof tg.sendData === 'function') {
       tg.sendData(JSON.stringify(payload));
-      tg.close();
+      if (typeof tg.close === 'function') tg.close();
     } else {
-      console.log('Payload for bot (demo):', payload);
+      console.log('Payload for bot:', payload);
       alert('Заказ (demo): ' + JSON.stringify(payload));
     }
   }
 
-  // Стартовый рендер
-  try {
-    renderCatalog(productsData);
-    updateCartUI();
-  } catch(e) {
-    console.error('Ошибка при рендере каталога:', e);
-  }
+  // стартовый рендер
+  renderCatalog(productsData);
+  updateCartUI();
+
+})();
 </script>
 
 </body>
 </html>
-
