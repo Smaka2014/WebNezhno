@@ -771,10 +771,7 @@
     if (tg && typeof tg.sendData === 'function') {
       tg.sendData(JSON.stringify(payload));
       console.log("tg.sendData called");
-      if (typeof tg.close === 'function') tg.close();
-    } else {
-      console.log('Payload for bot (fallback):', payload);
-      alert('Заказ (demo): ' + JSON.stringify(payload));
+
     }
   }
 
@@ -787,4 +784,5 @@
 
 </body>
 </html>
+
 
