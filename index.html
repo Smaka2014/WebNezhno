@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Каталог Nezhno</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #0e1117;
+      --card-bg: #161b22;
+      --accent: #ffb6c9;
+      --accent-soft: rgba(255, 182, 201, 0.12);
+      --text: #ffffff;
+      --text-muted: #9ca3af;
+      --border: #262b36;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.45);
+      --accent-gradient: linear-gradient(135deg, #ffb6c9, #ff8fb3);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Roboto", sans-serif;
+      background: radial-gradient(circle at top, #1b2233 0%, #05060a 50%, #050509 100%);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 12px 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ---------- HEADER ---------- */
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(9, 11, 18, 0.95);
+      border: 1px solid rgba(255, 182, 201, 0.16);
+      box-shadow: 0 14px 45px rgba(0, 0, 0, 0.55);
+      position: sticky;
+      top: 6px;
+      z-index: 5;
+      backdrop-filter: blur(22px);
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .app-title {
+      font-weight: 700;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-title span.logo {
+      display: inline-flex;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--accent-gradient);
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 0 0 2px rgba(8, 12, 22, 0.8);
+    }
+
+    .app-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      border: none;
+      outline: none;
+      padding: 8px 9px;
+      border-radius: 999px;
+      background: rgba(19, 24, 33, 0.9);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.18s ease;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .icon-btn span.label {
+      font-size: 12px;
+      margin-left: 5px;
+      color: var(--text-muted);
+    }
+
+    .icon-btn.highlight {
+      background: var(--accent-soft);
+      border-color: rgba(255, 182, 201, 0.4);
+      color: var(--accent);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ---------- PRODUCT GRID ---------- */
+
+    .catalog-title {
+      margin: 4px 2px 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #f9fafb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .catalog-title span.muted {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding-bottom: 6px;
+    }
+
+    .product-card {
+      background: radial-gradient(circle at top left, #25293a 0%, #111320 55%, #05060b 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 9px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 13px 30px rgba(0, 0, 0, 0.55);
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+        border-color 0.18s ease-out, background 0.18s ease-out;
+    }
+
+    .product-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 0 0,
+          rgba(255, 182, 201, 0.16),
+          transparent 55%);
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+      pointer-events: none;
+    }
+
+    .product-card:active {
+      transform: scale(0.97) translateY(1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+      border-color: rgba(255, 182, 201, 0.4);
+    }
+
+    .product-card:active::before {
+      opacity: 1;
+    }
+
+    .product-thumb {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      margin-bottom: 7px;
+      background: radial-gradient(circle at top, #3b3141, #141220);
+    }
+
+    .product-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease-out;
+    }
+
+    .product-card:hover .product-thumb img {
+      transform: scale(1.02);
+    }
+
+    .product-tag {
+      position: absolute;
+      left: 7px;
+      top: 7px;
+      padding: 3px 7px;
+      font-size: 11px;
+      border-radius: 999px;
+      background: rgba(5, 7, 13, 0.82);
+      color: var(--accent);
+      border: 1px solid rgba(255, 182, 201, 0.65);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(16px);
+    }
+
+    .product-tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-gradient);
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 1px;
+    }
+
+    .product-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    .product-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .product-footer {
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .product-price {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .product-chip {
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+    }
+
+    /* ---------- MODAL OVERLAY ---------- */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 15, 0.78);
+      backdrop-filter: blur(18px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.18s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 18px 18px 0 0;
+      background: radial-gradient(circle at top, #1f2437 0%, #05060b 55%, #030308 100%);
+      border-top: 1px solid rgba(148, 163, 184, 0.4);
+      border-left: 1px solid rgba(15, 23, 42, 0.9);
+      border-right: 1px solid rgba(15, 23, 42, 0.9);
+      box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.85);
+      padding: 10px 12px 16px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.22s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(14px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .sheet-grabber {
+      width: 46px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.45);
+      margin: 0 auto 8px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .modal-title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .modal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .close-btn {
+      border: none;
+      outline: none;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .close-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* ---------- GALLERY ---------- */
+
+    .modal-content {
+      overflow-y: auto;
+      padding-right: 2px;
+      padding-bottom: 4px;
+    }
+
+    .gallery {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      background: radial-gradient(circle at top, #3b3141, #141220);
+    }
+
+    .gallery-track {
+      display: flex;
+      transition: transform 0.25s ease-out;
+      will-change: transform;
+    }
+
+    .gallery-slide {
+      min-width: 100%;
+      user-select: none;
+    }
+
+    .gallery-slide img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-dots {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(5, 7, 13, 0.78);
+      backdrop-filter: blur(16px);
+    }
+
+    .gallery-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.6);
+      transition: width 0.18s ease, background 0.18s ease;
+    }
+
+    .gallery-dot.active {
+      width: 12px;
+      background: var(--accent-gradient);
+    }
+
+    .gallery-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.82);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 18px;
+      backdrop-filter: blur(12px);
+    }
+
+    .gallery-arrow.left {
+      left: 8px;
+    }
+
+    .gallery-arrow.right {
+      right: 8px;
+    }
+
+    .gallery-arrow:active {
+      transform: translateY(-50%) scale(0.92);
+    }
+
+    /* ---------- DESCRIPTION & INFO ---------- */
+
+    .product-description {
+      font-size: 13px;
+      color: #e5e7eb;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .product-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+    }
+
+    .badge.accent {
+      border-color: rgba(255, 182, 201, 0.7);
+      color: var(--accent);
+      background: rgba(255, 182, 201, 0.12);
+    }
+
+    .product-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .product-detail-label {
+      color: var(--text-muted);
+    }
+
+    .product-detail-value {
+      font-weight: 500;
+    }
+
+    .modal-footer {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(55, 65, 81, 0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-price {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .modal-price-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .primary-btn {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: var(--accent-gradient);
+      color: #111827;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(255, 182, 201, 0.45);
+    }
+
+    .primary-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 6px 16px rgba(255, 182, 201, 0.35);
+    }
+
+    /* ---------- BOTTOM SYSTEM TEXT ---------- */
+
+    .system-note {
+      margin-top: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 8px 10px 2px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <div class="app-title">
+          <span class="logo">N</span>
+          Каталог Nezhno
+        </div>
+        <div class="app-subtitle">@nezhnomasterskayabot</div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" type="button">
+          👤 <span class="label">Профиль</span>
+        </button>
+        <button class="icon-btn highlight" type="button" id="cartButton">
+          🛒 <span class="label">Корзина (0)</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CATALOG TITLE -->
+    <div class="catalog-title">
+      <span>Выберите позицию</span>
+      <span class="muted">Нажмите на товар, чтобы открыть подробности</span>
+    </div>
+
+    <!-- GRID ДЛЯ ТОВАРОВ (заполним через JS) -->
+    <div class="products-grid" id="productsGrid"></div>
+
+    <!-- СИСТЕМНОЕ СООБЩЕНИЕ -->
+    <div class="system-note">
+      Список выбранных позиций будет отправлен менеджеру для подтверждения
+      заказа в чате Telegram. После согласования вы получите итоговую стоимость
+      и сроки изготовления.
+    </div>
+  </div>
+
+  <!-- MODAL SHEET -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal-sheet">
+      <div class="sheet-grabber"></div>
+
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-title" id="modalTitle">Название товара</div>
+          <div class="modal-subtitle" id="modalSubtitle">Краткое описание</div>
+        </div>
+        <button class="close-btn" type="button" id="closeModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Галерея -->
+        <div class="gallery" id="gallery">
+          <div class="gallery-track" id="galleryTrack"></div>
+          <div class="gallery-dots" id="galleryDots"></div>
+          <button class="gallery-arrow left" type="button" id="arrowLeft">&#x276E;</button>
+          <button class="gallery-arrow right" type="button" id="arrowRight">&#x276F;</button>
+        </div>
+
+        <!-- Описание -->
+        <div class="product-description" id="modalDescription">
+          Здесь будет подробное описание товара. Ты можешь указать особенности, материалы, размеры,
+          варианты исполнения и любые другие детали, которые важны для клиента.
+        </div>
+
+        <div class="product-badges" id="modalBadges">
+          <!-- Примеры бейджей (можно задавать из JS) -->
+        </div>
+
+        <div class="product-detail-row">
+          <span class="product-detail-label">Срок изготовления</span>
+          <span class="product-detail-value" id="modalLeadTime">3–5 дней</span>
+        </div>
+        <div class="product-detail-row">
+          <span class="product-detail-label">Предоплата</span>
+          <span class="product-detail-value" id="modalPrepay">30%</span>
+        </div>
+      </div>
+
+      <!-- НИЖНЯЯ ПАНЕЛЬ -->
+      <div class="modal-footer">
+        <div>
+          <div class="modal-price" id="modalPrice">2 500 ₽</div>
+          <div class="modal-price-label">Ориентировочная стоимость</div>
+        </div>
+        <button class="primary-btn" type="button" id="addToCartBtn">
+          Добавить в корзину
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== ДАННЫЕ О ТОВАРАХ ======
+    const products = [
+      {
+        id: 'bracelet-rose',
+        name: 'Браслет «Нежная роза»',
+        short: 'Деликатный браслет с акцентной розой',
+        description:
+          'Лёгкий браслет, созданный для тех, кто любит минималистичные, но выразительные аксессуары. Выполнен вручную, аккуратные детали и мягкие оттенки делают его универсальным дополнением к любому образу.',
+        price: '2 500 ₽',
+        leadTime: '3–5 дней',
+        prepay: '30%',
+        tag: 'Хит',
+        chip: 'В наличии',
+        badges: ['Ручная работа', 'Индивидуальный размер', 'Гипоаллергенные материалы'],
+        images: [
+          'https://via.placeholder.com/600x400?text=Bracelet+1',
+          'https://via.placeholder.com/600x400?text=Bracelet+2',
+          'https://via.placeholder.com/600x400?text=Bracelet+3'
+        ]
+      },
+      {
+        id: 'earrings-pearl',
+        name: 'Серьги «Перламутровый рассвет»',
+        short: 'Нежные серьги с перламутровым блеском',
+        description:
+          'Серьги с мягким перламутровым сиянием подчёркивают черты лица и добавляют образу воздушности. Подойдут как для повседневной носки, так и для особых случаев.',
+        price: '3 100 ₽',
+        leadTime: '5–7 дней',
+        prepay: '50%',
+        tag: 'Новинка',
+        chip: 'На заказ',
+        badges: ['Лёгкий вес', 'Подходит для чувствительной кожи'],
+        images: [
+          'https://via.placeholder.com/600x400?text=Earrings+1',
+          'https://via.placeholder.com/600x400?text=Earrings+2'
+        ]
+      }
+      // ------ ШАБЛОН ДЛЯ НОВОГО ТОВАРА ------
+      // {
+      //   id: 'your-id',
+      //   name: 'Название товара',
+      //   short: 'Краткое описание',
+      //   description: 'Полное описание товара...',
+      //   price: '0 ₽',
+      //   leadTime: 'Срок изготовления',
+      //   prepay: 'Предоплата',
+      //   tag: 'Метка (Хит/Новинка/...)',
+      //   chip: 'Статус (В наличии/На заказ/...)',
+      //   badges: ['Бейдж 1', 'Бейдж 2'],
+      //   images: [
+      //     'https://адрес-картинки-1',
+      //     'https://адрес-картинки-2'
+      //   ]
+      // }
+    ];
+
+    // ====== ПОСТРОЕНИЕ СЕТКИ ТОВАРОВ ======
+    const productsGrid = document.getElementById('productsGrid');
+
+    products.forEach((product) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'product-card';
+      card.dataset.id = product.id;
+
+      card.innerHTML = `
+        <div class="product-thumb">
+          <img src="${product.images[0]}" alt="${product.name}" loading="lazy" />
+          ${product.tag
+            ? `<div class="product-tag">
+                 <span class="product-tag-dot"></span>${product.tag}
+               </div>`
+            : ''
+          }
+        </div>
+        <div class="product-info">
+          <div class="product-title">${product.name}</div>
+          <div class="product-meta">${product.short}</div>
+          <div class="product-footer">
+            <div class="product-price">${product.price}</div>
+            ${product.chip ? `<div class="product-chip">${product.chip}</div>` : ''}
+          </div>
+        </div>
+      `;
+
+      card.addEventListener('click', () => openProductModal(product.id));
+      productsGrid.appendChild(card);
+    });
+
+    // ====== МОДАЛКА И ГАЛЕРЕЯ ======
+    const modalBackdrop = document.getElementById('productModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalLeadTime = document.getElementById('modalLeadTime');
+    const modalPrepay = document.getElementById('modalPrepay');
+    const modalBadges = document.getElementById('modalBadges');
+
+    const gallery = document.getElementById('gallery');
+    const galleryTrack = document.getElementById('galleryTrack');
+    const galleryDots = document.getElementById('galleryDots');
+    const arrowLeft = document.getElementById('arrowLeft');
+    const arrowRight = document.getElementById('arrowRight');
+
+    let currentProduct = null;
+    let currentSlide = 0;
+    let totalSlides = 0;
+
+    function openProductModal(productId) {
+      const product = products.find((p) => p.id === productId);
+      if (!product) return;
+      currentProduct = product;
+      currentSlide = 0;
+
+      // Текст
+      modalTitle.textContent = product.name;
+      modalSubtitle.textContent = product.short || '';
+      modalDescription.textContent = product.description || '';
+      modalPrice.textContent = product.price || '';
+      modalLeadTime.textContent = product.leadTime || '';
+      modalPrepay.textContent = product.prepay || '';
+
+      // Бейджи
+      modalBadges.innerHTML = '';
+      if (Array.isArray(product.badges)) {
+        product.badges.forEach((b, idx) => {
+          const span = document.createElement('span');
+          span.className = 'badge' + (idx === 0 ? ' accent' : '');
+          span.textContent = b;
+          modalBadges.appendChild(span);
+        });
+      }
+
+      // Галерея
+      buildGallery(product.images || []);
+
+      // Открытие
+      modalBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      modalBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+      currentProduct = null;
+    }
+
+    closeModalBtn.addEventListener('click', closeProductModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) {
+        closeProductModal();
+      }
+    });
+
+    // Строим слайды и точки
+    function buildGallery(images) {
+      galleryTrack.innerHTML = '';
+      galleryDots.innerHTML = '';
+
+      if (!images.length) {
+        gallery.style.display = 'none';
+        return;
+      }
+      gallery.style.display = 'block';
+
+      images.forEach((src, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'gallery-slide';
+        slide.innerHTML = `<img src="${src}" alt="${currentProduct?.name || 'Фото товара'}" />`;
+        galleryTrack.appendChild(slide);
+
+        const dot = document.createElement('div');
+        dot.className = 'gallery-dot' + (index === 0 ? ' active' : '');
+        dot.dataset.index = index;
+        dot.addEventListener('click', () => goToSlide(index));
+        galleryDots.appendChild(dot);
+      });
+
+      totalSlides = images.length;
+      updateGallery();
+    }
+
+    function updateGallery() {
+      const offset = -currentSlide * 100;
+      galleryTrack.style.transform = `translateX(${offset}%)`;
+
+      [...galleryDots.children].forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+
+      arrowLeft.style.visibility = currentSlide === 0 ? 'hidden' : 'visible';
+      arrowRight.style.visibility = currentSlide === totalSlides - 1 ? 'hidden' : 'visible';
+    }
+
+    function goToSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      currentSlide = index;
+      updateGallery();
+    }
+
+    arrowLeft.addEventListener('click', () => goToSlide(currentSlide - 1));
+    arrowRight.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    // Свайпы
+    let startX = 0;
+    let isDragging = false;
+
+    gallery.addEventListener('touchstart', (e) => {
+      if (!totalSlides) return;
+      isDragging = true;
+      startX = e.touches[0].clientX;
+    });
+
+    gallery.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const dx = e.touches[0].clientX - startX;
+      const threshold = 40; // минимум для слайда
+      if (dx > threshold) {
+        isDragging = false;
+        goToSlide(currentSlide - 1);
+      } else if (dx < -threshold) {
+        isDragging = false;
+        goToSlide(currentSlide + 1);
+      }
+    });
+
+    gallery.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // Кнопка "Добавить в корзину" (заглушка, чтобы ты мог дальше связать с логикой бота)
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const cartButton = document.getElementById('cartButton');
+
+    let cartCount = 0;
+
+    addToCartBtn.addEventListener('click', () => {
+      if (!currentProduct) return;
+      cartCount++;
+      cartButton.querySelector('.label').textContent = `Корзина (${cartCount})`;
+      // Здесь можешь отправлять данные в Telegram WebApp API или в свой бекенд
+      // Например: Telegram.WebApp.sendData(JSON.stringify({ action: 'add', productId: currentProduct.id }));
+    });
+  </script>
+</body>
+</html>
