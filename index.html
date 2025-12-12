@@ -1546,7 +1546,7 @@
         const row = document.createElement('div');
         row.className = 'cart-item';
         row.innerHTML = `
-          <div class="cart-item-left">${item.title}</div>
+          <div class="cart-item-left">${item.name}</div>
           <div class="cart-item-controls">
             <button class="qty-btn" data-id="${item.id}" data-action="minus">-</button>
             <span class="qty-text">${item.qty}</span>
@@ -1721,6 +1721,7 @@
   </script>
 </body>
 </html>
+
 
 
 
