@@ -1699,29 +1699,49 @@
     }
 
     function sendOrderToBot() {
-      if (!cart.length) return;
-      let total = 0;
-      const itemsForSend = cart.map(item => {
-        total += item.price * item.qty;
-        return {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          qty: item.qty
-        };
-      });
-
-      const payload = { items: itemsForSend, total: total };
-      if (tg && typeof tg.sendData === 'function') {
-        tg.sendData(JSON.stringify(payload));
-      }
+    if (!cart.length) return;
+  
+    let baseTotal = 0;
+    const itemsForSend = cart.map(item => {
+      baseTotal += item.price * item.qty;
+      return {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        qty: item.qty
+      };
+    });
+  
+    // Считаем скидку и итоговую сумму (повторяем логику из redrawCartModal)
+    let discount = 0;
+    let finalTotal = baseTotal;
+    let promoCode = null;
+  
+    if (appliedPromo && PROMO_CODES[appliedPromo]) {
+      promoCode = appliedPromo;
+      discount = Math.round(baseTotal * PROMO_CODES[appliedPromo]);
+      finalTotal = baseTotal - discount;
     }
+  
+    const payload = {
+      items: itemsForSend,
+      baseTotal: baseTotal,          // сумма без скидки
+      discount: discount,            // сумма скидки
+      finalTotal: finalTotal,        // итоговая сумма (с промокодом)
+      promoCode: promoCode           // сам промокод (null если не был применён)
+    };
+  
+    if (tg && typeof tg.sendData === 'function') {
+      tg.sendData(JSON.stringify(payload));
+    }
+  }
 
     // Стартовое состояние
     updateCartUI();
   </script>
 </body>
 </html>
+
 
 
 
