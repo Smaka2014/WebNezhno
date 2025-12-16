@@ -735,11 +735,13 @@
       color: #fff;
       border: none;
       border-radius: 7px;
-      padding: 7px 16px;
+      padding: 9px 16px; /* Увеличили вертикальный padding, чтобы кнопка стала выше */
       cursor: pointer;
       font-size: 1rem;
       margin-top: 6px;
       width: 100%;
+      /* Убираем box-shadow, чтобы он не дублировался */
+      box-shadow: none;
     }
 
     .cart-promo {
@@ -760,12 +762,12 @@
       color: #6b7280;
     }
     .promo-apply-btn {
-      padding: 8px 14px;
+      padding: 8px 10px; /* Уменьшили горизонтальный padding */
       border-radius: 999px;
       border: 1px solid rgba(255, 182, 201, 0.55);
       background: rgba(255, 182, 201, 0.12);
       color: #ffb6c9;
-      font-size: 0.9rem;
+      font-size: 0.85rem; /* Уменьшили шрифт */
       font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
@@ -808,6 +810,7 @@
       font-weight: 700;
       letter-spacing: 0.02em;
       cursor: pointer;
+      /* Оставляем box-shadow только здесь */
       box-shadow: 0 12px 32px rgba(255, 182, 201, 0.45);
     }
 
@@ -1948,6 +1951,7 @@
   </script>
 </body>
 </html>
+
 
 
 
