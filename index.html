@@ -270,10 +270,8 @@
       flex-direction: column;
       gap: 2px;
       margin-top: 1px;
-      /* Увеличиваем высоту, чтобы вмещался текст */
-      min-height: 64px; /* Можно увеличить до 72px, если нужно больше места */
-      /* height: 56px; */ /* УБЕРИТЕ ЭТУ СТРОКУ */
-      /* overflow: hidden; */ /* УБЕРИТЕ ЭТУ СТРОКУ */
+      /* Добавьте эту строку */
+      flex-grow: 1; /* Позволяет блоку расти и занимать всю доступную высоту */
     }
 
     .product-title {
@@ -287,11 +285,13 @@
       color: var(--text-muted);
     }
 
-    .product-footer {
+   .product-footer {
       margin-top: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      /* Добавьте эту строку */
+      margin-top: auto; /* Прижимает footer к нижнему краю родительского контейнера */
     }
 
     .product-price {
@@ -1948,6 +1948,7 @@
   </script>
 </body>
 </html>
+
 
 
 
