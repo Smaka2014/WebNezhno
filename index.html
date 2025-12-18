@@ -1163,12 +1163,12 @@
 
     // ====== ДАННЫЕ О ТОВАРАХ (объединены из обоих файлов) ======
     const products = [
-     /*{
+     {
         id: 'ny-bundle',
         name: 'Новогодний набор',
-        short: 'В набор входит 2 свечи с ароматами зимней коллекции: свеча 220 мл в серебряном стакане и свеча 100 мл в металлической баночке. Ароматы на выбор.',
+        short: '220 мл + 100 мл',
         description:
-          'При подтверждении заказа у менеджера, укажите желаемые ароматы в наборе',
+          'В набор входит 2 свечи: свеча 220 мл с ароматом из зимней коллекции на выбор в серебряном стакане и свеча 100 мл с ароматом из зимней/базовой коллекции на выбор в металлической баночке. Свечи упакованы в красную бумагу тишью с блестками и круглую шляпную коробку красного цвета с логотипом. Внутри коробки серебряный сияющий наполнитель. Коробка перевязана брендированной лентой бордового цвета с серебряной печатью. К набору прилагаются инструкция и праздничная открытка. Коробка упакована в белый крафт-пакет.',
         price: 3390,
         leadTime: '2-3 дня',
         prepay: '',
@@ -1176,9 +1176,20 @@
         chip: 'На заказ',
         badges: [],
         images: [
-          'https://www.dostavka-tsvetov.com/image/cache/catalog/Candles/podarochnyy-boks-svecha-i-aromasashe-1100x1100.jpg'
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0648.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0434.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0461.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0447.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0475.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0644.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0645.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0646.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0650.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0647.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0649.jpg?raw=true',
+          
         ]
-      },*/
+      },
       {
         id: 'otkritka',
         name: 'Открытка новогодняя',
@@ -1193,6 +1204,27 @@
         images: [
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_9832.jpg?raw=true',
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0345.jpg?raw=true'
+        ]
+      },
+      {
+        id: 'small-candle1',
+        name: 'Свеча мини',
+        short: '100мл',
+        description:
+          'Свеча 100 мл в металлической баночке с ароматом из зимней/базовой коллекции. Уточнить аромат можно в диалоге с менеджером. Свечи формата мини изготавливаются под заказ. Упакована в бумагу тишью и белый брендированный пакет мини. Инструкция прилагается.',
+        price: 1790,
+        leadTime: '',
+        prepay: '',
+        tag: '',
+        chip: 'На заказ',
+        badges: [],
+        images: [
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0652.PNG?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0651.PNG?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0654.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0653.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0655.jpg?raw=true',
+          'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0656.jpg?raw=true'
         ]
       },
       {
@@ -1268,9 +1300,9 @@
         price: 2390,
         leadTime: '',
         prepay: '',
-        tag: 'Лимитированная коллекция',
+        tag: '',
         chip: '',
-        badges: ['Новый год'],
+        badges: ['Новый год', 'Лимитированная коллекция'],
         images: [
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0111.PNG?raw=true',
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0136.PNG?raw=true'
@@ -1286,7 +1318,7 @@
         prepay: '',
         tag: '',
         chip: '',
-        badges: [],
+        badges: ['Новый год', 'Лимитированная коллекция'],
         images: [
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0110.PNG?raw=true',
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0113.PNG?raw=true'
@@ -1303,7 +1335,7 @@
         prepay: '',
         tag: '',
         chip: '',
-        badges: [],
+        badges: ['Новый год', 'Лимитированная коллекция'],
         images: [
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0105.PNG?raw=true',
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0106.PNG?raw=true',
@@ -1320,7 +1352,7 @@
         prepay: '',
         tag: '',
         chip: '',
-        badges: [],
+        badges: ['Новый год', 'Лимитированная коллекция'],
         images: [
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0108.PNG?raw=true',
           'https://github.com/Smaka2014/WebNezhno/blob/main/img/IMG_0109.PNG?raw=true'
@@ -2013,6 +2045,7 @@
   </script>
 </body>
 </html>
+
 
 
 
